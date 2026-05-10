@@ -6,6 +6,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.web.bind.annotation.*;
 import org.xtu.Entity.Book;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/qwen/chatclient")
@@ -45,6 +46,21 @@ public class QwenChatClientController {
                 .call()
                 .entity(Book.class);
         return entity.toString();
+    }
+
+    @GetMapping("/stream")
+    public Flux<String> stream(@RequestParam String query) {
+        Flux<String> content = chatClient.prompt()
+                .system("你是一个智能助手，帮助用户解答问题。请根据用户的输入提供有用的信息和建议。")
+                .user(query)
+                .options(DashScopeChatOptions.builder()
+                        .temperature(0.0)
+                        .model("qwen-plus")
+                        .maxToken(2048)
+                        .build())
+                .stream()
+                .content();
+        return content;
     }
 
 }
