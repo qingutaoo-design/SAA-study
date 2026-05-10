@@ -13,12 +13,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/qwen")
-public class QueryController {
+public class QwenChatController {
 
 
     private ChatModel chatModel;
 
-    public QueryController(ChatModel chatModel) {
+    public QwenChatController(ChatModel chatModel) {
         this.chatModel = chatModel;
     }
 
