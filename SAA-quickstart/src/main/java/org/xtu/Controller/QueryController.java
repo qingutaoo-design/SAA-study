@@ -1,23 +1,18 @@
 package org.xtu.Controller;
 
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/qwen")
 public class QueryController {
 
 
@@ -65,5 +60,11 @@ public class QueryController {
         String text = response.getResult().getOutput().getText();
 
         return text;
+    }
+
+    @GetMapping("/stream/query")
+    public Flux<String> query4(@RequestParam String query){
+        Flux<String> stream = chatModel.stream(query);
+        return stream;
     }
 }
