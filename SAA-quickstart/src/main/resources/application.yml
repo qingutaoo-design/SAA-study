@@ -1,0 +1,14 @@
+
+# Spring AI - Alibaba DashScope Configuration
+# ?????? DashScope API Key???????????
+server:
+  port: 8080
+
+spring:
+  ai:
+    dashscope:
+        api-key: ${QWEN_KEY:sk-2cf02fd4aa4440948c7222dc2f650882}  # ?????????????
+        chat:
+          options:
+            model: qwen-plus
+
