@@ -7,6 +7,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.web.bind.annotation.*;
 import org.xtu.Advisor.CallAdvisor1;
 import org.xtu.Advisor.CallAdvisor2;
+import org.xtu.Advisor.SimpleBaseAdvisor;
 import org.xtu.Entity.Book;
 import reactor.core.publisher.Flux;
 
@@ -79,6 +80,22 @@ public class QwenChatClientController {
                 .call()
                 .entity(Book.class);
         return entity.toString();
+    }
+
+    @GetMapping("/simpleBaseAdvisor")
+    public String SimpleBaseAdvisor(@RequestBody String query) {
+        String content = chatClient.prompt()
+                .system("你是一个智能助手，帮助用户解答问题。请根据用户的输入提供有用的信息和建议。")
+                .user(query)
+                .options(DashScopeChatOptions.builder()
+                        .temperature(0.0)
+                        .model("qwen-plus")
+                        .maxToken(2048)
+                        .build())
+                .advisors(new SimpleBaseAdvisor())
+                .call()
+                .content();
+        return content;
     }
 
 }
