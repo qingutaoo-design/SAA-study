@@ -11,6 +11,8 @@ import org.xtu.Advisor.SimpleBaseAdvisor;
 import org.xtu.Entity.Book;
 import reactor.core.publisher.Flux;
 
+import java.util.function.Consumer;
+
 @RestController
 @RequestMapping("/qwen/chatclient")
 public class QwenChatClientController {
@@ -92,6 +94,7 @@ public class QwenChatClientController {
                         .model("qwen-plus")
                         .maxToken(2048)
                         .build())
+                .advisors(advisorSpec -> advisorSpec.param("conversationId","id-1"))
                 .advisors(new SimpleBaseAdvisor())
                 .call()
                 .content();
