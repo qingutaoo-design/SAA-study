@@ -85,7 +85,7 @@ public class QwenChatClientController {
     }
 
     @GetMapping("/simpleBaseAdvisor")
-    public String SimpleBaseAdvisor(@RequestBody String query) {
+    public String SimpleBaseAdvisor(@RequestParam String query,@RequestParam String conversationId) {
         String content = chatClient.prompt()
                 .system("你是一个智能助手，帮助用户解答问题。请根据用户的输入提供有用的信息和建议。")
                 .user(query)
@@ -94,7 +94,7 @@ public class QwenChatClientController {
                         .model("qwen-plus")
                         .maxToken(2048)
                         .build())
-                .advisors(advisorSpec -> advisorSpec.param("conversationId","id-1"))
+                .advisors(advisorSpec -> advisorSpec.param("conversationId",conversationId))
                 .advisors(new SimpleBaseAdvisor())
                 .call()
                 .content();

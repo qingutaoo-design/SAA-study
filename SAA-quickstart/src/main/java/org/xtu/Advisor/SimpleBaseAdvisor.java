@@ -24,7 +24,7 @@ public class SimpleBaseAdvisor implements BaseAdvisor {
     public ChatClientRequest before(ChatClientRequest chatClientRequest, AdvisorChain advisorChain) {
         // 获取当前对话ID
         // 先简单设置一个固定的对话ID，实际使用中可以根据请求内容生成唯一ID
-        String conversationId = chatClientRequest.context().get("conversationId").toString();// String conversationId = "id-1";
+        String conversationId = (String)chatClientRequest.context().get("conversationId");// String conversationId = "id-1";
         // 从历史记录中获取当前对话ID对应的历史对话记录 (使用 Spring 的 Message 类型)
         List<Message> chatMemory = historyMap.get(conversationId);
         if (chatMemory == null) {
@@ -45,10 +45,11 @@ public class SimpleBaseAdvisor implements BaseAdvisor {
 
             // 保存当前消息给历史记录
             historyMap.put(conversationId, chatMemory);
-
-            return ChatClientRequest.builder()
+            ChatClientRequest request = ChatClientRequest.builder()
                     .prompt(newPrompt)
+                    .context(chatClientRequest.context()) // 将对话ID添加到上下文中，确保后续请求可以使用相同的ID
                     .build();
+            return request;
         }
         // 如果没有 prompt，则直接返回原请求
         return chatClientRequest;
@@ -59,7 +60,7 @@ public class SimpleBaseAdvisor implements BaseAdvisor {
         // 对LLM的响应进行处理，例如将LLM的回复添加到历史对话中
 
         // 获取当前对话ID
-        String conversationId = chatClientResponse.context().get("conversationId").toString(); // String conversationId = "id-1";
+        String conversationId = (String)chatClientResponse.context().get("conversationId"); // String conversationId = "id-1";
 
         // 从历史记录中获取当前对话ID对应的历史对话记录
         List<Message> chatMemory = historyMap.get(conversationId);
