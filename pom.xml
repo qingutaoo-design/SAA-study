@@ -29,6 +29,7 @@
 	</scm>
 	<modules>
 		<module>SAA-quickstart</module>
+		<module>SAA-RAG</module>
 	</modules>
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>

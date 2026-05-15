@@ -1,0 +1,22 @@
+spring:
+  ai:
+    dashscope:
+      api-key: ${QWEN_KEY}
+      chat:
+        options:
+          model: qwen-plus
+      embedding:
+        options:
+          model: text-embedding-v4
+    vectorstore:
+      milvus:
+        client:
+          host: "localhost"
+          port: 19530
+          username: root
+          password: ""
+        collection-name: vector_store
+        embedding-dimension: 1024
+        index-type: ivf_flat
+        metric-type: cosine
+        initialize-schema: true
