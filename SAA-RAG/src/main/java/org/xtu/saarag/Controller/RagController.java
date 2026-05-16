@@ -40,7 +40,7 @@ public class RagController {
     public List<Document> search(String query) {
         // 在 Milvus 中测试检索最相关的文档（相似度检索）
 
-        List<Document> results = this.vectorStore.similaritySearch(SearchRequest.builder().query(query).topK(5).build());
+        List<Document> results = this.vectorStore.similaritySearch(SearchRequest.builder().query(query).topK(3).build());
         System.out.println(results);
         return results;
     }

@@ -1,0 +1,6 @@
+question,answer
+什么是Java重载,方法名相同参数列表不同
+什么是Java重写,子类重写父类同名同参方法
+TCP和UDP区别,TCP面向连接可靠;UDP无连接快
+什么是事务,一组操作要么全成功要么全回滚
+HTTP和HTTPS区别,HTTPS加了SSL加密端口443
