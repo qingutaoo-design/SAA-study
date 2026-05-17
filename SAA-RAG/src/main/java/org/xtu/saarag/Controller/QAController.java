@@ -3,6 +3,7 @@ package org.xtu.saarag.Controller;
 
 import com.alibaba.cloud.ai.dashscope.api.DashScopeApi;
 import com.alibaba.cloud.ai.dashscope.rag.DashScopeDocumentRetriever;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -17,6 +18,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.xtu.saarag.Tool.TimeTool;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -34,7 +37,7 @@ public class QAController {
         this.vectorStore = vectorStore;
          this.chatClient = chatClient.defaultAdvisors(RetrievalAugmentationAdvisor.builder()
                          .documentRetriever(VectorStoreDocumentRetriever.builder().topK(3).vectorStore(vectorStore).build())
-                .build())
+                .build()).defaultTools(new TimeTool())
                 .build();
 
     }
