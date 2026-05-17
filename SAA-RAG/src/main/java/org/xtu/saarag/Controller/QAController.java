@@ -13,12 +13,13 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.retrieval.search.DocumentRetriever;
 import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.xtu.saarag.Tool.TimeTool;
+
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,17 +30,18 @@ import java.util.List;
 @RequestMapping("/qa")
 public class QAController {
 
+
     private VectorStore vectorStore;
 
     private ChatClient chatClient;
 
-    public QAController(VectorStore vectorStore, ChatClient.Builder chatClient) {
+    public QAController(VectorStore vectorStore, ChatClient.Builder chatClient, ToolCallbackProvider toolCallbackProvider) {
         this.vectorStore = vectorStore;
          this.chatClient = chatClient.defaultAdvisors(RetrievalAugmentationAdvisor.builder()
                          .documentRetriever(VectorStoreDocumentRetriever.builder().topK(3).vectorStore(vectorStore).build())
-                .build()).defaultTools(new TimeTool())
+                .build())
+                 .defaultToolCallbacks(toolCallbackProvider.getToolCallbacks())
                 .build();
-
     }
 
     @GetMapping("/import")

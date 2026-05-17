@@ -1,0 +1,15 @@
+spring:
+  main:
+#    解决与父工程 spring-boot-starter-web 的 Tomcat 冲突，强制使用 WebFlux 环境
+    web-application-type: reactive
+  ai:
+    dashscope:
+      api-key: ${QWEN_KEY}
+      agent:
+        api-key: ${QWEN_KEY}
+    mcp:
+      server:
+        name: my-mcp-server
+        version: 1.0.0
+server:
+  port: 8080
