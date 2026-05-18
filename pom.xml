@@ -31,6 +31,7 @@
 		<module>SAA-quickstart</module>
 		<module>SAA-RAG</module>
 		<module>SAA-MCP</module>
+		<module>SAA-Graph</module>
 	</modules>
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
