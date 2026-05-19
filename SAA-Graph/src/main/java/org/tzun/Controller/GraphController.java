@@ -4,10 +4,10 @@ import com.alibaba.cloud.ai.graph.CompiledGraph;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.exception.GraphStateException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tzun.Config.GraphConfig;
 
 import java.util.Map;
 import java.util.Optional;
@@ -17,20 +17,27 @@ import java.util.Optional;
 @RequestMapping("/graph")
 public class GraphController {
 
-    private GraphConfig graphConfig;
+    private CompiledGraph compiledGraph1;
+    private CompiledGraph compiledGraph2;
 
-    public GraphController(GraphConfig graphConfig) {
-        this.graphConfig = graphConfig;
+    public GraphController(@Qualifier("quickStartGraph") CompiledGraph compiledGraph1,@Qualifier("simpleTranslationGraph") CompiledGraph compiledGraph2) {
+        this.compiledGraph1 = compiledGraph1;
+        this.compiledGraph2 = compiledGraph2;
     }
 
     @GetMapping("/quickStartGraph")
     public String quickStartGraph() throws GraphStateException {
-
-        CompiledGraph compiledGraph = graphConfig.quickStartGraph();
-
-        Optional<OverAllState> invoke = compiledGraph.invoke(Map.of());
+        Optional<OverAllState> invoke = compiledGraph1.invoke(Map.of());
         log.info("invoke:{}",invoke);
 
         return "ok";
+    }
+
+    @GetMapping("/quickStartGraph2")
+    public Map<String, Object> quickStartGraph2(String query) throws GraphStateException {
+        Optional<OverAllState> overAllState = compiledGraph2.invoke(Map.of("word", query));
+        return overAllState.map(state -> state.data())
+                .orElse(Map.of());
+
     }
 }
