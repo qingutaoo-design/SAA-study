@@ -1,7 +1,9 @@
 package org.tzun.Config;
 
 import com.alibaba.cloud.ai.graph.*;
+import com.alibaba.cloud.ai.graph.action.AsyncEdgeAction;
 import com.alibaba.cloud.ai.graph.action.AsyncNodeAction;
+import com.alibaba.cloud.ai.graph.action.EdgeAction;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import com.alibaba.cloud.ai.graph.exception.GraphStateException;
 import com.alibaba.cloud.ai.graph.state.strategy.ReplaceStrategy;
@@ -9,8 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.tzun.Node.SentenceNode;
-import org.tzun.Node.TranslationNode;
+import org.tzun.Node.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -92,7 +93,36 @@ public class GraphConfig {
         //编译状态图
         return stateGraph.compile();
 
+    }
 
+    @Bean("simpleConditionGraph")
+    public CompiledGraph simpleConditionGraph(ChatClient.Builder chatClientBuilder) throws GraphStateException {
+
+
+        //定义状态转换策略工厂
+        KeyStrategyFactory keyStrategyFactory = () -> Map.of("topic",new ReplaceStrategy());
+        //创建状态图
+        StateGraph stateGraph = new StateGraph("simpleConditionGraph",keyStrategyFactory);
+
+        //定义节点
+        stateGraph.addNode("生成笑话",AsyncNodeAction.node_async(new GenerateJokeNode(chatClientBuilder)));
+        stateGraph.addNode("评估笑话",AsyncNodeAction.node_async(new EvaluateJokesNode(chatClientBuilder)));
+        stateGraph.addNode("优化笑话",AsyncNodeAction.node_async(new EnhancejokeQualityNode(chatClientBuilder)));
+
+        //定义边
+
+        stateGraph.addEdge(StateGraph.START,"生成笑话");
+        stateGraph.addEdge("生成笑话","评估笑话");
+        stateGraph.addConditionalEdges("评估笑话", AsyncEdgeAction.edge_async(new EdgeAction() {
+            @Override
+            public String apply(OverAllState state) throws Exception {
+                //指定状态中要判断条件的结果（这里是评估笑话的评分）
+                return state.value("result","优秀");
+            }
+        }),Map.of("优秀",StateGraph.END,"不够优秀","优化笑话"));
+        stateGraph.addEdge("优化笑话",StateGraph.END);
+        //编译状态图
+        return stateGraph.compile();
     }
 
 }
