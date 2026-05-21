@@ -125,4 +125,39 @@ public class GraphConfig {
         return stateGraph.compile();
     }
 
+    @Bean("loopGraph")
+    public CompiledGraph loopGraph(ChatClient.Builder chatClientBuilder) throws GraphStateException {
+
+
+        //定义状态转换策略工厂
+        KeyStrategyFactory keyStrategyFactory = () -> Map.of("topic",new ReplaceStrategy()
+                ,"loopCount",new ReplaceStrategy()
+                ,"nextStep",new ReplaceStrategy()
+                ,"goalScore",new ReplaceStrategy()
+        );
+        //创建状态图
+        StateGraph stateGraph = new StateGraph("loopGraph",keyStrategyFactory);
+
+
+
+
+        //定义节点
+        stateGraph.addNode("生成笑话",AsyncNodeAction.node_async(new GenerateJokeNode(chatClientBuilder)));
+        stateGraph.addNode("判断是否继续优化",AsyncNodeAction.node_async(new LoopEvaluateJokesNode(chatClientBuilder,8,3)));
+
+        //定义边
+        stateGraph.addEdge(StateGraph.START,"生成笑话");
+        stateGraph.addEdge("生成笑话","判断是否继续优化");
+        stateGraph.addConditionalEdges("判断是否继续优化", AsyncEdgeAction.edge_async(new EdgeAction() {
+            @Override
+            public String apply(OverAllState state) throws Exception {
+                //指定状态中要判断条件的结果（这里是下一步是否循环）
+                return state.value("nextStep","break");
+            }
+        }),Map.of("loop","生成笑话","break",StateGraph.END));
+
+        //编译状态图
+        return stateGraph.compile();
+    }
+
 }

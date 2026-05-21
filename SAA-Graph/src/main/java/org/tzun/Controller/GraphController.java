@@ -21,13 +21,16 @@ public class GraphController {
     private CompiledGraph compiledGraph1;
     private CompiledGraph compiledGraph2;
     private CompiledGraph compiledGraph3;
+    private CompiledGraph compiledGraph4;
 
     public GraphController(@Qualifier("quickStartGraph") CompiledGraph compiledGraph1,
                            @Qualifier("simpleTranslationGraph") CompiledGraph compiledGraph2,
-                           @Qualifier("simpleConditionGraph")CompiledGraph compiledGraph3) {
+                           @Qualifier("simpleConditionGraph")CompiledGraph compiledGraph3,
+                           @Qualifier("loopGraph")CompiledGraph compiledGraph4) {
         this.compiledGraph1 = compiledGraph1;
         this.compiledGraph2 = compiledGraph2;
         this.compiledGraph3 = compiledGraph3;
+        this.compiledGraph4 = compiledGraph4;
     }
 
     @GetMapping("/quickStartGraph")
@@ -50,6 +53,13 @@ public class GraphController {
     @GetMapping("/quickStartGraph3")
     public Map<String, Object> quickStartGraph3(String query) throws GraphStateException {
         Optional<OverAllState> overAllState = compiledGraph3.invoke(Map.of("topic", query));
+        return overAllState.map(state -> state.data())
+                .orElse(Map.of());
+    }
+
+    @GetMapping("/quickStartGraph4")
+    public Map<String, Object> quickStartGraph4(String query) throws GraphStateException {
+        Optional<OverAllState> overAllState = compiledGraph4.invoke(Map.of("topic", query));
         return overAllState.map(state -> state.data())
                 .orElse(Map.of());
     }
